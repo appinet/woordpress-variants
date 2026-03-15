@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="7d3a29c7-dd8b-4230-85ae-7823296943d9" name="appinet-vps-ovh" url="https://woo.appinet.pl">
+        <fileTransfer rootFolder="/home/woo/public_html/wordpress" accessType="SFTP" host="146.59.93.132" port="9022" sshConfigId="27dacf95-763a-4fc8-b6f7-2855eab85901" sshConfig="woo@146.59.93.132:9022 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,261 @@
+#aav-variation-content .aav-block {
+    margin: 0 0 18px;
+}
+
+.aav-hidden-select {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 1px !important;
+    height: 1px !important;
+}
+
+#aav-variation-content .aav-block h3,
+#aav-tab-variation-content h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+#aav-badge .aav-badge-pill {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.aav-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.aav-gallery-grid img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.aav-attribute-buttons {
+    margin: 10px 0 18px;
+}
+
+.aav-attribute-buttons-title {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.aav-attribute-buttons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.aav-attribute-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aav-button-gap, 8px);
+    padding: var(--aav-button-padding-y, 10px) var(--aav-button-padding-x, 14px);
+    border: var(--aav-button-border-width, 1px) solid var(--aav-button-border, #111111);
+    border-radius: var(--aav-button-radius, 999px);
+    background: var(--aav-button-bg, #111111);
+    color: var(--aav-button-color, #ffffff);
+    width: var(--aav-button-width, auto);
+    min-width: var(--aav-button-width, auto);
+    height: var(--aav-button-height, auto);
+    font-size: var(--aav-button-font-size, 14px);
+    font-weight: var(--aav-button-font-weight, 600);
+    text-transform: var(--aav-button-text-transform, none);
+    line-height: 1.1;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.aav-attribute-button .aav-attribute-button-label {
+    text-transform: var(--aav-button-text-transform, none) !important;
+}
+
+.aav-attribute-button[style*="--aav-term-color"]:not(.is-selected) {
+    background: transparent !important;
+    border-color: var(--aav-term-color) !important;
+    color: var(--aav-term-color) !important;
+}
+
+.aav-attribute-button[style*="--aav-term-color"]:not(.is-selected):hover {
+    background: var(--aav-button-hover-bg, transparent) !important;
+    border-color: var(--aav-button-hover-border, var(--aav-term-color)) !important;
+    color: var(--aav-button-hover-color, var(--aav-term-color)) !important;
+}
+
+.aav-attribute-button[style*="--aav-term-color"].is-selected {
+    background: var(--aav-button-active-bg, var(--aav-term-color)) !important;
+    border-color: var(--aav-button-active-border, var(--aav-term-color)) !important;
+    color: var(--aav-button-active-color, #ffffff) !important;
+}
+
+.aav-attribute-button:hover {
+    background: var(--aav-button-hover-bg, var(--aav-button-bg, #111111));
+    color: var(--aav-button-hover-color, var(--aav-button-color, #ffffff));
+    border-color: var(--aav-button-hover-border, var(--aav-button-border, #111111));
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.aav-attribute-button.is-selected {
+    background: var(--aav-button-active-bg, var(--aav-button-bg, #111111));
+    color: var(--aav-button-active-color, var(--aav-button-color, #ffffff));
+    border-color: var(--aav-button-active-border, var(--aav-button-border, #111111));
+    box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.12);
+}
+
+.aav-attribute-button.is-disabled,
+.aav-attribute-button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.aav-attribute-button-icon {
+    font-size: 1.05em;
+}
+
+.aav-attribute-button-image {
+    display: inline-flex;
+    width: var(--aav-button-image-size, 32px);
+    height: var(--aav-button-image-size, 32px);
+    overflow: hidden;
+    border-radius: 10px;
+    flex: 0 0 var(--aav-button-image-size, 32px);
+}
+
+.aav-attribute-button-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.aav-attribute-button.has-media {
+    flex-direction: var(--aav-button-media-flex-direction, column);
+    align-items: var(--aav-button-media-align-items, center);
+    gap: var(--aav-button-media-label-gap, 8px);
+    padding: 10px;
+    min-width: max(48px, var(--aav-button-image-size, 32px));
+    min-height: max(48px, var(--aav-button-image-size, 32px));
+    justify-content: var(--aav-button-media-justify-content, center);
+}
+
+.aav-attribute-button.has-media .aav-attribute-button-label {
+    display: block;
+    font-size: var(--aav-button-media-label-font-size, 12px);
+    color: var(--aav-button-media-label-color, currentColor);
+    text-transform: var(--aav-button-media-label-text-transform, none) !important;
+    line-height: 1.2;
+    text-align: var(--aav-button-media-text-align, center);
+    max-width: 100%;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: var(--aav-button-media-label-lines, 2);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.aav-attribute-button.has-media:hover .aav-attribute-button-label {
+    color: var(--aav-button-media-label-hover-color, var(--aav-button-media-label-color, currentColor));
+}
+
+.aav-attribute-button.has-media.is-selected .aav-attribute-button-label {
+    color: var(--aav-button-media-label-active-color, var(--aav-button-media-label-color, currentColor));
+}
+
+.aav-attribute-button-swatch {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    flex: 0 0 14px;
+}
+
+.aav-attribute-button-hover-image {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+    background: #fff;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.aav-attribute-button-hover-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (hover: none) {
+    .aav-attribute-button[data-hover-image].is-selected {
+        padding-top: 74px;
+    }
+
+    .aav-attribute-button[data-hover-image].is-selected .aav-attribute-button-hover-image {
+        display: block;
+        top: 10px;
+        bottom: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 44px;
+        height: 44px;
+        box-shadow: none;
+    }
+}
+
+.aav-button-mode[data-animation="lift"] .aav-attribute-button:hover,
+.aav-button-mode .aav-attribute-button:hover {
+    transform: translateY(-2px);
+}
+
+.aav-button-mode[data-animation="scale"] .aav-attribute-button:hover {
+    transform: scale(1.04);
+}
+
+.aav-button-mode[data-animation="pulse"] .aav-attribute-button.is-selected {
+    animation: aav-pulse 1.8s infinite;
+}
+
+.aav-button-mode[data-animation="none"] .aav-attribute-button:hover,
+.aav-button-mode[data-animation="none"] .aav-attribute-button.is-selected {
+    transform: none;
+    animation: none;
+}
+
+.aav-button-mode table.variations th.label,
+.aav-button-mode table.variations td.label,
+.aav-button-mode table.variations tr > th.label > label {
+    display: none !important;
+}
+
+@keyframes aav-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(17, 17, 17, 0.2);
+    }
+    70% {
+        box-shadow: 0 0 0 12px rgba(17, 17, 17, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(17, 17, 17, 0);
+    }
+}
