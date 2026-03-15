@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Appinet Advanced Variations
  * Description: Rozbudowana obsługa dodatkowych pól i SEO URL dla wariantów WooCommerce.
- * Version: 1.9.21
+ * Version: 1.9.24
  * Author: Appinet
  * Text Domain: appinet-advanced-variations
  */
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 define('AAV_PATH', plugin_dir_path(__FILE__));
 define('AAV_URL', plugin_dir_url(__FILE__));
-define('AAV_VERSION', '1.9.21');
+define('AAV_VERSION', '1.9.24');
 
 if (!class_exists('Appinet_Advanced_Variations')) {
     final class Appinet_Advanced_Variations

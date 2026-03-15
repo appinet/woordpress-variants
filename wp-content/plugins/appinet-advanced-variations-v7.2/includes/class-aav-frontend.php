@@ -6,14 +6,39 @@ if (!defined('ABSPATH')) {
 
 class AAV_Frontend
 {
+    private $variation_form_moved = false;
+
     public function __construct()
     {
         add_filter('woocommerce_available_variation', [$this, 'add_variation_data'], 20, 3);
         add_filter('woocommerce_dropdown_variation_attribute_options_args', [$this, 'preselect_variation_dropdown'], 20);
         add_action('woocommerce_single_product_summary', [$this, 'render_containers'], 35);
         add_filter('woocommerce_product_tabs', [$this, 'register_tab']);
+        add_action('wp', [$this, 'maybe_reposition_variation_form'], 20);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets']);
         add_action('rest_api_init', [$this, 'register_rest_fields']);
+    }
+
+    public function maybe_reposition_variation_form()
+    {
+        if ($this->variation_form_moved || !function_exists('is_product') || !is_product()) {
+            return;
+        }
+
+        global $product;
+        if (!$product || !is_object($product) || !method_exists($product, 'is_type') || !$product->is_type('variable')) {
+            return;
+        }
+
+        $target = $this->get_variation_form_target((int) $product->get_id());
+
+        if ($target === null) {
+            return;
+        }
+
+        remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30);
+        add_action($target['hook'], 'woocommerce_template_single_add_to_cart', $target['priority']);
+        $this->variation_form_moved = true;
     }
 
     public function add_variation_data($data, $product = null, $variation = null)
@@ -92,6 +117,9 @@ class AAV_Frontend
                 $current_variation_id = AAV_Variation_URLs::resolve_variation_id($product, sanitize_text_field(wp_unslash($path)));
             }
         }
+        $form_location = $product && is_object($product) && method_exists($product, 'get_id')
+            ? $this->get_variation_form_location((int) $product->get_id())
+            : ['position' => 'default'];
 
         $button_presentations = $this->get_button_presentations($product);
         $button_presentations_flat = array_merge(
@@ -120,6 +148,7 @@ class AAV_Frontend
             'buttonAnimation' => $settings['button_animation'],
             'buttonTextTransform' => $resolved_button_text_transform,
             'buttonMediaLabelTextTransform' => $resolved_media_label_text_transform,
+            'variationFormLocation' => $form_location,
             'buttonPresentations' => $button_presentations,
             'buttonPresentationsFlat' => $button_presentations_flat,
         ]);
@@ -139,6 +168,116 @@ class AAV_Frontend
     {
         $value = (string) $value;
         return in_array($value, ['uppercase', 'lowercase', 'capitalize', 'none'], true) ? $value : 'none';
+    }
+
+    private function get_variation_form_position($product_id)
+    {
+        $settings = AAV_Admin::get_settings();
+        $position = (string) ($settings['variation_form_position'] ?? 'default');
+
+        if (function_exists('get_field')) {
+            $acf_position = get_field('aav_variants_position', $product_id);
+            if (is_string($acf_position) && $acf_position !== '') {
+                $position = $acf_position;
+            }
+        }
+
+        return in_array($position, ['default', 'under_title', 'under_price', 'under_excerpt', 'after_summary', 'custom_hook', 'acf_field'], true)
+            ? $position
+            : 'default';
+    }
+
+    private function get_variation_form_target($product_id)
+    {
+        $position = $this->get_variation_form_position($product_id);
+        if ($position === 'acf_field') {
+            return null;
+        }
+
+        if ($position === 'custom_hook') {
+            $custom_target = $this->get_custom_variation_form_target($product_id);
+            if ($custom_target !== null) {
+                return $custom_target;
+            }
+        }
+
+        switch ($position) {
+            case 'under_title':
+                return ['hook' => 'woocommerce_single_product_summary', 'priority' => 6];
+            case 'under_price':
+                return ['hook' => 'woocommerce_single_product_summary', 'priority' => 11];
+            case 'under_excerpt':
+                return ['hook' => 'woocommerce_single_product_summary', 'priority' => 21];
+            case 'after_summary':
+                return ['hook' => 'woocommerce_after_single_product_summary', 'priority' => 5];
+            default:
+                return null;
+        }
+    }
+
+    private function get_custom_variation_form_target($product_id)
+    {
+        $settings = AAV_Admin::get_settings();
+        $hook = sanitize_key((string) ($settings['variation_form_custom_hook'] ?? ''));
+        $priority = max(1, min(999, (int) ($settings['variation_form_custom_priority'] ?? 10)));
+
+        if (function_exists('get_field')) {
+            $acf_hook = get_field('aav_variants_custom_hook', $product_id);
+            $acf_priority = get_field('aav_variants_custom_priority', $product_id);
+
+            if (is_string($acf_hook) && $acf_hook !== '') {
+                $hook = sanitize_key($acf_hook);
+            }
+
+            if ($acf_priority !== null && $acf_priority !== '') {
+                $priority = max(1, min(999, (int) $acf_priority));
+            }
+        }
+
+        if ($hook === '') {
+            return null;
+        }
+
+        return [
+            'hook' => $hook,
+            'priority' => $priority,
+        ];
+    }
+
+    private function get_variation_form_location($product_id)
+    {
+        $settings = AAV_Admin::get_settings();
+        $position = $this->get_variation_form_position($product_id);
+        $location = [
+            'position' => $position,
+        ];
+
+        if ($position !== 'acf_field') {
+            return $location;
+        }
+
+        $field_name = sanitize_key((string) ($settings['variation_form_acf_field'] ?? ''));
+        $placement = in_array(($settings['variation_form_acf_placement'] ?? 'after'), ['before', 'after'], true)
+            ? $settings['variation_form_acf_placement']
+            : 'after';
+
+        if (function_exists('get_field')) {
+            $acf_field_name = get_field('aav_variants_acf_field', $product_id);
+            $acf_placement = get_field('aav_variants_acf_placement', $product_id);
+
+            if (is_string($acf_field_name) && $acf_field_name !== '') {
+                $field_name = sanitize_key($acf_field_name);
+            }
+
+            if (is_string($acf_placement) && in_array($acf_placement, ['before', 'after'], true)) {
+                $placement = $acf_placement;
+            }
+        }
+
+        $location['acfField'] = $field_name;
+        $location['acfPlacement'] = $placement;
+
+        return $location;
     }
 
     private function get_text_transform_inline_script($button_transform, $media_transform)

@@ -201,6 +201,50 @@ jQuery(function ($) {
         }
     }
 
+    function resolveAcfFieldTarget(fieldName) {
+        if (!fieldName) {
+            return $();
+        }
+
+        const selectors = [
+            '.acf-field[data-name="' + fieldName + '"]',
+            '[data-name="' + fieldName + '"].acf-field',
+            '.acf-field-' + fieldName,
+            '[data-name="' + fieldName + '"]'
+        ];
+
+        for (let i = 0; i < selectors.length; i += 1) {
+            const $target = $(selectors[i]).first();
+            if ($target.length) {
+                return $target;
+            }
+        }
+
+        return $();
+    }
+
+    function maybeMoveVariationFormByAcf($form) {
+        if (typeof aavData === 'undefined' || !aavData.variationFormLocation) {
+            return;
+        }
+
+        const location = aavData.variationFormLocation;
+        if (location.position !== 'acf_field' || !location.acfField) {
+            return;
+        }
+
+        const $target = resolveAcfFieldTarget(location.acfField);
+        if (!$target.length) {
+            return;
+        }
+
+        if (location.acfPlacement === 'before') {
+            $target.before($form);
+        } else {
+            $target.after($form);
+        }
+    }
+
     function currentUrlHasVariationPath() {
         const baseUrl = cleanProductBaseUrl().replace(/\/$/, '');
         const current = (window.location.origin + window.location.pathname).replace(/\/$/, '');
@@ -550,6 +594,8 @@ jQuery(function ($) {
     $('.variations_form').each(function () {
         const $form = $(this);
         let isPreloadingFromUrl = currentUrlHasVariationPath();
+
+        maybeMoveVariationFormByAcf($form);
 
         initButtonMode($form);
         preloadVariationFromPath($form);

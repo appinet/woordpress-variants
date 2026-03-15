@@ -113,6 +113,11 @@ class AAV_Admin
     {
         $defaults = [
             'display_mode' => 'select',
+            'variation_form_position' => 'default',
+            'variation_form_custom_hook' => '',
+            'variation_form_custom_priority' => 10,
+            'variation_form_acf_field' => '',
+            'variation_form_acf_placement' => 'after',
             'button_icon' => '',
             'button_background' => '#111111',
             'button_text_color' => '#ffffff',
@@ -180,6 +185,11 @@ class AAV_Admin
 
         return [
             'display_mode' => in_array(($input['display_mode'] ?? 'select'), ['select', 'button'], true) ? $input['display_mode'] : 'select',
+            'variation_form_position' => in_array(($input['variation_form_position'] ?? 'default'), ['default', 'under_title', 'under_price', 'under_excerpt', 'after_summary', 'custom_hook', 'acf_field'], true) ? $input['variation_form_position'] : 'default',
+            'variation_form_custom_hook' => sanitize_key($input['variation_form_custom_hook'] ?? ''),
+            'variation_form_custom_priority' => max(1, min(999, absint($input['variation_form_custom_priority'] ?? 10))),
+            'variation_form_acf_field' => sanitize_key($input['variation_form_acf_field'] ?? ''),
+            'variation_form_acf_placement' => in_array(($input['variation_form_acf_placement'] ?? 'after'), ['before', 'after'], true) ? $input['variation_form_acf_placement'] : 'after',
             'button_icon' => sanitize_text_field($input['button_icon'] ?? ''),
             'button_background' => sanitize_hex_color($input['button_background'] ?? '') ?: '#111111',
             'button_text_color' => sanitize_hex_color($input['button_text_color'] ?? '') ?: '#ffffff',
@@ -238,6 +248,52 @@ class AAV_Admin
                                 <option value="select" <?php selected($settings['display_mode'], 'select'); ?>>Select</option>
                                 <option value="button" <?php selected($settings['display_mode'], 'button'); ?>>Button</option>
                             </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="aav_variation_form_position">Pozycja formularza wariantów</label></th>
+                        <td>
+                            <select id="aav_variation_form_position" name="<?php echo esc_attr(self::SETTINGS_OPTION); ?>[variation_form_position]">
+                                <option value="default" <?php selected($settings['variation_form_position'], 'default'); ?>>Domyślna WooCommerce</option>
+                                <option value="under_title" <?php selected($settings['variation_form_position'], 'under_title'); ?>>Pod tytułem</option>
+                                <option value="under_price" <?php selected($settings['variation_form_position'], 'under_price'); ?>>Pod ceną</option>
+                                <option value="under_excerpt" <?php selected($settings['variation_form_position'], 'under_excerpt'); ?>>Pod krótkim opisem</option>
+                                <option value="after_summary" <?php selected($settings['variation_form_position'], 'after_summary'); ?>>Pod całym summary</option>
+                                <option value="custom_hook" <?php selected($settings['variation_form_position'], 'custom_hook'); ?>>Własny hook</option>
+                                <option value="acf_field" <?php selected($settings['variation_form_position'], 'acf_field'); ?>>Przy polu ACF</option>
+                            </select>
+                            <p class="description">ACF może nadpisać tę wartość per produkt przez pole `aav_variants_position`.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="aav_variation_form_custom_hook">Własny hook formularza</label></th>
+                        <td>
+                            <input id="aav_variation_form_custom_hook" type="text" class="regular-text" name="<?php echo esc_attr(self::SETTINGS_OPTION); ?>[variation_form_custom_hook]" value="<?php echo esc_attr($settings['variation_form_custom_hook']); ?>" />
+                            <p class="description">Np. `woocommerce_before_single_product_summary` albo własny hook z motywu. ACF override: `aav_variants_custom_hook`.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="aav_variation_form_custom_priority">Priorytet własnego hooka</label></th>
+                        <td>
+                            <input id="aav_variation_form_custom_priority" type="number" min="1" max="999" name="<?php echo esc_attr(self::SETTINGS_OPTION); ?>[variation_form_custom_priority]" value="<?php echo esc_attr($settings['variation_form_custom_priority']); ?>" />
+                            <p class="description">ACF override: `aav_variants_custom_priority`.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="aav_variation_form_acf_field">Nazwa pola ACF</label></th>
+                        <td>
+                            <input id="aav_variation_form_acf_field" type="text" class="regular-text" name="<?php echo esc_attr(self::SETTINGS_OPTION); ?>[variation_form_acf_field]" value="<?php echo esc_attr($settings['variation_form_acf_field']); ?>" />
+                            <p class="description">Np. `sklad`, `opis_smaku`. ACF override: `aav_variants_acf_field`.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="aav_variation_form_acf_placement">Pozycja względem pola ACF</label></th>
+                        <td>
+                            <select id="aav_variation_form_acf_placement" name="<?php echo esc_attr(self::SETTINGS_OPTION); ?>[variation_form_acf_placement]">
+                                <option value="after" <?php selected($settings['variation_form_acf_placement'], 'after'); ?>>Po polu</option>
+                                <option value="before" <?php selected($settings['variation_form_acf_placement'], 'before'); ?>>Przed polem</option>
+                            </select>
+                            <p class="description">ACF override: `aav_variants_acf_placement`.</p>
                         </td>
                     </tr>
                     <tr>
